@@ -1,3 +1,6 @@
+#include <cstddef>
+#include <cstdint>
+
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 // VERSION
