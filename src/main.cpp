@@ -75,37 +75,35 @@ word_t reverse_bits(uint64_t word){
 
 
 
-
+// TESTED :P
 size_t set_word(vector<word_t>& filter, size_t hash, word_t word){
   if (!word) return 0; 
+  size_t prev_bitcount;
 
   if (hash % WORD_LEN == 0){
-    size_t prev_bitcount = std::popcount(filter[hash/WORD_LEN + 1]);
-    filter[hash/WORD_LEN + 1] |= word;
-    return std::popcount(filter[hash/WORD_LEN + 1]) - prev_bitcount;
-  } 
+    prev_bitcount = std::popcount(filter[hash/WORD_LEN]);
+    filter[hash/WORD_LEN] |= word;
+    return std::popcount(filter[hash/WORD_LEN]) - prev_bitcount;
+  }
 
+  prev_bitcount = std::popcount(filter[hash/WORD_LEN]) + std::popcount(filter[hash/WORD_LEN + 1]);
   size_t i = hash%WORD_LEN;
-  return 0;
-  /*
+  size_t j = WORD_LEN - i;
+
   size_t mask1 = word << i;
-  size_t mask2 = __builtin_bitreverse64(word << (WORD_LEN - i));
+  size_t mask2 = word >> j;
   
-  
-  size_t prev_setbits = std::popcount(filter[hash/WORD_LEN + 1]) + std::popcount(filter[WORD_LEN]);
+  filter[hash/WORD_LEN] |= mask1;
+  filter[hash/WORD_LEN + 1] |= mask2;
 
-  filter[hash/WORD_LEN +1] |= (word & mask1); 
-  filter[hash/WORD_LEN] |= (word & mask2); 
-
-  return std::popcount(filter[hash/WORD_LEN + 1]) + std::popcount(filter[WORD_LEN]) - prev_setbits;
-  */
+  return (std::popcount(filter[hash/WORD_LEN]) + std::popcount(filter[hash/WORD_LEN + 1])) - prev_bitcount;
 }
 
 
 int main(){
 
-  size_t bits;
-  size_t set_bits;
+  size_t bits = 0;
+  size_t set_bits = 0;
   vector<word_t> filter;
 
   kebab::MultiplyShift hash;
@@ -116,8 +114,10 @@ int main(){
   
 
 //  set_bits += set_word(filter, 66, MAX_WORD);
-  size_t w = get_word(filter, 61);
-  println("{}", w);
+  size_t w1 = get_word(filter, 61);
+  set_bits += set_word(filter, 61, 167);
+  size_t w2 = get_word(filter, 61);
+  println("{} + {} bits => {}", w1, set_bits, w2);
 
 //  uint64_t a = 4;
 //  reverse_bits(a);
