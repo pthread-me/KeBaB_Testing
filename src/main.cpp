@@ -31,17 +31,18 @@ void init(size_t elements, double error_rate, size_t num_hashes, kebab::Multiply
 // TESTED :P
 word_t get_word(vector<word_t>& filter, size_t hash){
   if (hash % WORD_LEN == 0){
-    return filter[hash/WORD_LEN + 1];
+    return filter[hash/WORD_LEN];
   } 
 
-  size_t b1 = filter[hash/WORD_LEN + 1];
-  size_t b2 = filter[hash/WORD_LEN];
+  size_t b1 = filter[hash/WORD_LEN];
+  size_t b2 = filter[hash/WORD_LEN + 1];
   size_t i = hash%WORD_LEN;
+  size_t j = WORD_LEN - i;
 
   size_t mask1 = MAX_WORD << i; 
-  size_t mask2 = MAX_WORD << (WORD_LEN - i); 
+  size_t mask2 = MAX_WORD >> j; 
 
-  return (b2 & mask2) | ((b1 & mask1) >> i);
+  return ((b2 & mask2)<<j) | ((b1 & mask1) >> i);
   
 }
 
@@ -110,13 +111,14 @@ int main(){
   kebab::MultiplyShift hash;
   init(300, 0.1, 3, hash, bits, set_bits, filter);
 
-//  filter[1] = 0xC700000000000000;
-//  filter[2] = 14;
+  filter[0] = 0xa000000000000000;
+  filter[1] = 0xE000000000000003;
+  
 
 //  set_bits += set_word(filter, 66, MAX_WORD);
-//  size_t w = get_word(filter, 66);
-//  println("{}", w);
+  size_t w = get_word(filter, 61);
+  println("{}", w);
 
-  uint64_t a = 4;
-  reverse_bits(a);
+//  uint64_t a = 4;
+//  reverse_bits(a);
 }
